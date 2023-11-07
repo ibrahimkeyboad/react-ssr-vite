@@ -18,6 +18,11 @@ const ssrManifest = isProduction
 // Create http server
 const app = express();
 
+let handler = createStaticHandler(routes);
+
+const createFetchRequest = require('./request');
+const routes = require('./routes');
+
 // Add Vite or respective production middlewares
 let vite;
 if (!isProduction) {
@@ -39,6 +44,9 @@ if (!isProduction) {
 app.use('*', async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, '');
+
+    let fetchRequest = createFetchRequest(req);
+    let context = await handler.query(fetchRequest);
 
     let template;
     let render;
